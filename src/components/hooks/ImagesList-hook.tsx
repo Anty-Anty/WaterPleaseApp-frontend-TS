@@ -4,14 +4,18 @@
 // Example output:
 //   [ { id: 1, img: 1 }, { id: 2, img: 2 } ]
 
-
 import { useState, useEffect } from "react";
 
-export const useImagesList = (basename) => {
-  const [logoList, setLogoList] = useState([]);
+interface LogoItem {
+  id: number;
+  img: number;
+}
+
+export const useImagesList = (basename: string) => {
+  const [logoList, setLogoList] = useState<LogoItem[]>([]);
 
   useEffect(() => {
-    const found = [];
+    const found: LogoItem[] = [];
     let i = 1;
 
     const checkNext = () => {

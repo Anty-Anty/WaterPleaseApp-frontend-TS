@@ -16,16 +16,30 @@
  */
 
 import React, { useState, useRef, useEffect } from "react";
-import { validate } from "../util/validators";
+import { validate, Validator } from "../util/validators";
 import { formatDisplayDate } from "../util/days";
 import "./CustomDateInput.css";
 
-const CustomDateInput = (props) => {
-  const [selectedDate, setSelectedDate] = useState(props.initialValue || "");
-  const [isTouched, setIsTouched] = useState(false);
-  const [isValid, setIsValid] = useState(props.initialValidity || false);
+interface CustomDateInputProps {
+  id: string;
+  placeholder?: string;
+  initialValue?: string;
+  initialValidity?: boolean;
+  validators: Validator[];
+  errorText: string;
+  onInput: (id: string, value: string, isValid: boolean) => void;
+}
 
-  const inputRef = useRef(null);
+const CustomDateInput: React.FC<CustomDateInputProps> = (props) => {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    props.initialValue || ""
+  );
+  const [isTouched, setIsTouched] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(
+    props.initialValidity || false
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Format for the visible div
   const formatted = selectedDate
@@ -33,14 +47,14 @@ const CustomDateInput = (props) => {
     : props.placeholder || "Select date";
 
   // When user selects date
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSelectedDate(value);
 
     const valid = validate(value, props.validators);
     setIsValid(valid);
 
-    props.onInput && props.onInput(props.id, value, valid);
+    props.onInput(props.id, value, valid);
   };
 
   // When user clicks the visible div → open date picker
@@ -64,7 +78,9 @@ const CustomDateInput = (props) => {
   return (
     <div className="input-wrapper-date-input">
       <div
-        className={`input-like-div ${!isValid && isTouched ? "add-item-invalid" : ""}`}
+        className={`input-like-div ${
+          !isValid && isTouched ? "add-item-invalid" : ""
+        }`}
         onClick={handleClick}
       >
         {formatted}
@@ -81,9 +97,7 @@ const CustomDateInput = (props) => {
       />
 
       {/* Validation error */}
-      {!isValid && isTouched && (
-        <div className="err">{props.errorText}</div>
-      )}
+      {!isValid && isTouched && <div className="err">{props.errorText}</div>}
     </div>
   );
 };
